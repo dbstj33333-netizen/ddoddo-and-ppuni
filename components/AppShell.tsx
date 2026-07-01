@@ -16,8 +16,11 @@ export default function AppShell() {
 
   return (
     <div className="min-h-dvh w-full bg-gradient-to-b from-[#ece2cf] to-[#e2d6bd] md:flex md:items-center md:justify-center md:py-6">
-      {/* 폰 프레임 */}
-      <div className="relative mx-auto flex h-dvh w-full max-w-[430px] flex-col overflow-hidden bg-cream shadow-xl md:h-[880px] md:max-h-[92vh] md:rounded-[2.5rem] md:border-[6px] md:border-[#2c2a40]">
+      {/* 폰 프레임 (transform 으로 내부 fixed 오버레이를 프레임 안에 가둔다) */}
+      <div
+        className="relative mx-auto flex h-dvh w-full max-w-[430px] flex-col overflow-hidden bg-cream shadow-xl transform-gpu md:h-[880px] md:max-h-[92vh] md:rounded-[2.5rem] md:border-[6px] md:border-[#2c2a40]"
+        style={{ transform: "translateZ(0)" }}
+      >
         {!ready ? (
           <div className="grid flex-1 place-items-center">
             <div className="flex flex-col items-center gap-3">

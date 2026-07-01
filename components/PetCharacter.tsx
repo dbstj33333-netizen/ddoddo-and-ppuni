@@ -1,8 +1,8 @@
 "use client";
 
-// 캐릭터 렌더링. 이미지가 있으면 이미지를, 없으면 이모지 플레이스홀더를 보여준다.
-// state 값으로 애니메이션이 달라진다. 이미지 파일만 교체하면 그대로 반영된다.
-import { useEffect, useState } from "react";
+// 캐릭터 렌더링. 요청 상태 이미지가 없으면 '기본' 이미지로, 그것도 없으면 이모지로 대체.
+// 이렇게 하면 밥주기(먹는 이미지 없음) 등에서 이모지가 잠깐 튀는 현상이 없다.
+import { useState } from "react";
 import type { PetImageState } from "@/lib/constants";
 import { petImagePath } from "@/lib/constants";
 import { computeMood, fallbackEmoji, moodToImageState } from "@/lib/mood";
@@ -15,6 +15,9 @@ const SIZE_PX: Record<"sm" | "md" | "lg" | "xl", number> = {
   xl: 232,
 };
 
+// 로드 실패한 이미지 경로를 앱 전역에 기억 (한 번 404면 다시 시도하지 않아 깜빡임 방지)
+const failedImages = new Set<string>();
+
 export default function PetCharacter({
   pet,
   state,
@@ -26,13 +29,17 @@ export default function PetCharacter({
 }) {
   const mood = computeMood(pet);
   const effectiveState: PetImageState = state ?? moodToImageState(mood);
-  const [imgOk, setImgOk] = useState(true);
   const px = SIZE_PX[size];
+  // 실패 캐시가 갱신될 때 강제 리렌더
+  const [, bump] = useState(0);
 
-  // 상태가 바뀌면 이미지 재시도
-  useEffect(() => {
-    setImgOk(true);
-  }, [effectiveState, pet.id]);
+  // 표시할 이미지 결정: 요청 상태 → 기본 → (둘 다 없으면) 이모지
+  const primarySrc = petImagePath(pet.id, effectiveState);
+  const defaultSrc = petImagePath(pet.id, "default");
+  let src: string | null;
+  if (!failedImages.has(primarySrc)) src = primarySrc;
+  else if (!failedImages.has(defaultSrc)) src = defaultSrc;
+  else src = null;
 
   // 바닥에 앉은 느낌: 위아래로 떠다니지 않고 아래를 고정한 채 숨만 쉰다.
   const anim =
@@ -58,19 +65,23 @@ export default function PetCharacter({
         className={`relative origin-bottom ${anim}`}
         style={{ width: px, height: px }}
       >
-        {imgOk ? (
+        {src ? (
           /* eslint-disable-next-line @next/next/no-img-element */
           <img
-            src={petImagePath(pet.id, effectiveState)}
+            key={src}
+            src={src}
             alt={`${pet.name} (${pet.species === "dog" ? "강아지" : "고양이"})`}
             width={px}
             height={px}
             draggable={false}
-            onError={() => setImgOk(false)}
+            onError={() => {
+              failedImages.add(src as string);
+              bump((n) => n + 1);
+            }}
             className="h-full w-full select-none object-contain"
           />
         ) : (
-          // 이미지가 없을 때 대체 UI (앱이 깨지지 않도록)
+          // 이미지가 하나도 없을 때만 이모지 대체 (앱이 깨지지 않도록)
           <div
             role="img"
             aria-label={`${pet.name} (${
