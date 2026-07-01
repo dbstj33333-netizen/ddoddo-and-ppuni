@@ -1,12 +1,13 @@
 "use client";
 
-// 하단 내비게이션 — 요즘 유행하는 플로팅 pill 스타일.
-// 활성 탭은 아이콘+라벨이 있는 알약 형태로 강조된다.
+// 하단 내비게이션 — 요즘 유행하는 플로팅 pill 스타일 (Lucide 아이콘).
+import { House, Settings, type LucideIcon } from "lucide-react";
+
 export type TabKey = "home" | "settings";
 
-const TABS: { key: TabKey; label: string; emoji: string }[] = [
-  { key: "home", label: "홈", emoji: "🏠" },
-  { key: "settings", label: "설정", emoji: "⚙️" },
+const TABS: { key: TabKey; label: string; Icon: LucideIcon }[] = [
+  { key: "home", label: "홈", Icon: House },
+  { key: "settings", label: "설정", Icon: Settings },
 ];
 
 export default function BottomNavigation({
@@ -37,7 +38,7 @@ export default function BottomNavigation({
                     : "h-11 w-11 text-cocoa-soft"
                 }`}
               >
-                <span className="text-lg leading-none">{tab.emoji}</span>
+                <tab.Icon size={20} strokeWidth={2.2} aria-hidden />
                 {isActive && (
                   <span className="text-sm font-bold">{tab.label}</span>
                 )}

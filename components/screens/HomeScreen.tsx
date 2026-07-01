@@ -2,6 +2,7 @@
 
 // 홈(메인): 한 마리만 표시 + 돌봄 행동을 한 화면에서 수행
 import { useCallback, useEffect, useRef, useState } from "react";
+import { Bell, Coins, Cookie, Moon } from "lucide-react";
 import { useGame } from "@/context/GameContext";
 import type { PetImageState } from "@/lib/constants";
 import { computeMood, moodToImageState, speechForState } from "@/lib/mood";
@@ -138,20 +139,22 @@ export default function HomeScreen() {
       <div className="shrink-0 space-y-2 px-3 pt-2">
         <div className="flex items-center justify-between gap-2">
           <div className="flex items-center gap-1.5">
-            <span className="flex items-center gap-1 rounded-full border border-white/60 bg-white/85 px-3 py-1.5 text-sm font-extrabold text-cocoa shadow-sm backdrop-blur">
-              🪙 {state.inventory.coins}
+            <span className="flex items-center gap-1.5 rounded-full border border-white/60 bg-white/85 px-3 py-1.5 text-sm font-extrabold text-cocoa shadow-sm backdrop-blur">
+              <Coins size={16} strokeWidth={2.2} className="text-[#e0a63c]" aria-hidden />
+              {state.inventory.coins}
             </span>
-            <span className="flex items-center gap-1 rounded-full border border-white/60 bg-white/85 px-3 py-1.5 text-sm font-extrabold text-cocoa shadow-sm backdrop-blur">
-              🍪 {state.inventory.snacks}
+            <span className="flex items-center gap-1.5 rounded-full border border-white/60 bg-white/85 px-3 py-1.5 text-sm font-extrabold text-cocoa shadow-sm backdrop-blur">
+              <Cookie size={16} strokeWidth={2.2} className="text-[#c08552]" aria-hidden />
+              {state.inventory.snacks}
             </span>
           </div>
           <button
             type="button"
             onClick={openNotifications}
             aria-label="알림 보기"
-            className="no-tap-highlight grid h-9 w-9 place-items-center rounded-full border border-white/60 bg-white/85 text-lg shadow-sm backdrop-blur transition active:scale-90"
+            className="no-tap-highlight grid h-9 w-9 place-items-center rounded-full border border-white/60 bg-white/85 text-cocoa shadow-sm backdrop-blur transition active:scale-90"
           >
-            🔔
+            <Bell size={18} strokeWidth={2.2} aria-hidden />
           </button>
         </div>
         <div className="rounded-3xl border border-white/60 bg-white/60 px-3 py-2.5 shadow-sm backdrop-blur-md">
@@ -176,7 +179,8 @@ export default function HomeScreen() {
             onClick={() => setSleepOpen(true)}
             className="no-tap-highlight absolute inset-x-6 bottom-16 flex items-center justify-center gap-2 rounded-2xl bg-[#2c2a40]/95 px-4 py-2.5 text-sm font-bold text-white shadow-lg transition active:scale-95"
           >
-            🌙 {selectedPet.name}가 자고 있어요 · 수면 화면 열기
+            <Moon size={16} strokeWidth={2.2} aria-hidden />
+            {selectedPet.name}가 자고 있어요 · 수면 화면 열기
           </button>
         )}
 
