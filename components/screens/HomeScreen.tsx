@@ -99,7 +99,13 @@ export default function HomeScreen() {
 
   const handleWash = () => {
     const r = wash(selectedPet.id);
-    if (r.ok) flashState(selectedPet.id, "happy");
+    // 쁘니(고양이)는 목욕을 싫어해서 bad 표정, 또또는 happy 표정
+    if (r.ok)
+      flashState(
+        selectedPet.id,
+        selectedPet.species === "cat" ? "bad" : "happy",
+        2200
+      );
   };
 
   // 쓰다듬으면 잠깐 happy 표정으로 전환

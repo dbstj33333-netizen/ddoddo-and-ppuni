@@ -194,7 +194,8 @@ export type PetImageState =
   | "eating"
   | "sleeping"
   | "walking"
-  | "playing";
+  | "playing"
+  | "bad";
 
 export function petImagePath(id: PetId, state: PetImageState): string {
   return `/images/pets/${id}-${state}.png`;
