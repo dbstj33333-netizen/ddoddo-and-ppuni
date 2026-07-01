@@ -182,7 +182,7 @@ export default function HomeScreen() {
 
         {/* 하단 오버레이: 동물 전환 토글 (선택은 이 토글로만) */}
         <div className="absolute inset-x-0 bottom-3 flex justify-center">
-          <div className="w-60 max-w-[80%] shadow-md">
+          <div className="w-60 max-w-[80%] rounded-full shadow-md">
             <PetSelector
               pets={pets}
               selectedId={selectedPet.id}

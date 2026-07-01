@@ -62,12 +62,15 @@ export function applyElapsed(pet: Pet, nowMs: number): Pet {
     );
   }
 
+  // 값은 소수점까지 유지해서 짧은 주기의 감소가 누적되도록 한다.
+  // (정수로 반올림하면 15초 주기의 미세 감소가 사라져 값이 얼지 않도록)
+  const round2 = (n: number) => Math.round(n * 100) / 100;
   return {
     ...pet,
-    fullness: Math.round(fullness),
-    happiness: Math.round(happiness),
-    energy: Math.round(energy),
-    cleanliness: Math.round(cleanliness),
+    fullness: round2(fullness),
+    happiness: round2(happiness),
+    energy: round2(energy),
+    cleanliness: round2(cleanliness),
     lastUpdatedAt: new Date(nowMs).toISOString(),
   };
 }

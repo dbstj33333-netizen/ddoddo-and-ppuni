@@ -23,7 +23,8 @@ export default function AppShell() {
         className="relative flex h-dvh w-full max-w-[520px] flex-col overflow-hidden bg-cream bg-cover bg-center transform-gpu"
         style={{
           transform: "translateZ(0)",
-          backgroundImage: "url('/images/room-bg.png')",
+          // 배경(잔디/하늘)은 홈에서만. 설정에서는 베이지(크림) 배경.
+          backgroundImage: tab === "home" ? "url('/images/room-bg.png')" : "none",
         }}
       >
         {!ready ? (
