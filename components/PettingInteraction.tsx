@@ -17,22 +17,27 @@ export default function PettingInteraction({
   pet,
   imageState,
   size = "lg",
+  sizeCss,
   showName = true,
   onStroke,
 }: {
   pet: Pet;
   imageState?: PetImageState;
   size?: "md" | "lg" | "xl";
+  sizeCss?: string;
   showName?: boolean;
   onStroke: (id: PetId) => void;
 }) {
   const [hearts, setHearts] = useState<Heart[]>([]);
+  const [patSeed, setPatSeed] = useState(0);
+  const [hand, setHand] = useState<{ x: number; y: number } | null>(null);
   const containerRef = useRef<HTMLDivElement>(null);
   const pressing = useRef(false);
   const lastPos = useRef<{ x: number; y: number } | null>(null);
   const accumulated = useRef(0);
   const totalMove = useRef(0);
   const heartId = useRef(0);
+  const handTimer = useRef(0);
 
   const accent = pet.id === "toto" ? "toto" : "ppuni";
 
@@ -57,6 +62,12 @@ export default function PettingInteraction({
     if (pet.isSleeping) return; // 자는 중엔 반응 없음
     onStroke(pet.id);
     spawnHeart(x, y);
+    setPatSeed((s) => s + 1); // 캐릭터 눌리는 효과 트리거
+    // 쓰다듬는 손 위치 표시
+    const rect = containerRef.current?.getBoundingClientRect();
+    if (rect) setHand({ x: x - rect.left, y: y - rect.top });
+    window.clearTimeout(handTimer.current);
+    handTimer.current = window.setTimeout(() => setHand(null), 450);
   };
 
   const onPointerDown = (e: React.PointerEvent) => {
@@ -117,7 +128,24 @@ export default function PettingInteraction({
       className="no-tap-highlight relative rounded-3xl p-2"
       style={{ touchAction: "none" }}
     >
-      <PetCharacter pet={pet} state={imageState} size={size} />
+      <PetCharacter
+        pet={pet}
+        state={imageState}
+        size={size}
+        sizeCss={sizeCss}
+        patSeed={patSeed}
+      />
+
+      {/* 쓰다듬는 손 */}
+      {hand && (
+        <span
+          className="pointer-events-none absolute z-20 text-3xl animate-hand-rub"
+          style={{ left: hand.x, top: hand.y }}
+          aria-hidden
+        >
+          🤚
+        </span>
+      )}
 
       {/* 이름표 */}
       {showName && (

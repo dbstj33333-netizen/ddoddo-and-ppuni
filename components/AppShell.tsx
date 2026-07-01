@@ -15,10 +15,11 @@ export default function AppShell() {
   const [tab, setTab] = useState<TabKey>("home");
 
   return (
-    <div className="min-h-dvh w-full bg-gradient-to-b from-[#ece2cf] to-[#e2d6bd] md:flex md:items-center md:justify-center md:py-6">
-      {/* 폰 프레임 (transform 으로 내부 fixed 오버레이를 프레임 안에 가둔다) */}
+    <div className="flex min-h-dvh w-full justify-center bg-cream">
+      {/* 실제 앱 화면: 모든 기기에서 화면을 꽉 채우는 반응형 컬럼.
+          transform 으로 내부 fixed 오버레이를 이 컬럼 안에 가둔다. */}
       <div
-        className="relative mx-auto flex h-dvh w-full max-w-[430px] flex-col overflow-hidden bg-cream shadow-xl transform-gpu md:h-[880px] md:max-h-[92vh] md:rounded-[2.5rem] md:border-[6px] md:border-[#2c2a40]"
+        className="relative flex h-dvh w-full max-w-[520px] flex-col overflow-hidden bg-cream transform-gpu"
         style={{ transform: "translateZ(0)" }}
       >
         {!ready ? (

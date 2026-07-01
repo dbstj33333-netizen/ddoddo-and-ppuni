@@ -18,9 +18,9 @@ export function computeMood(pet: Pet): Mood {
   ];
   entries.sort((a, b) => a[1] - b[1]);
   const [lowestMood, lowestVal] = entries[0];
+  // 심하게 낮은 상태가 없고 행복도가 높으면 = 기분 좋음 → happy
   if (lowestVal < 40) return lowestMood;
-  if (fullness >= 80 && happiness >= 80 && energy >= 80 && cleanliness >= 80)
-    return "happy";
+  if (happiness >= 70) return "happy";
   return "neutral";
 }
 
@@ -62,6 +62,66 @@ export function pickSpeech(pet: Pet): string {
         : `${name}가 아주 만족스러워 보여요.`;
     default:
       return randomItem(RANDOM_SPEECH[pet.id]);
+  }
+}
+
+// 시드 기반 선택 (렌더마다 흔들리지 않게 결정적으로 고름)
+function seededPick(arr: readonly string[], seed: number): string {
+  return arr[Math.abs(Math.trunc(seed)) % arr.length];
+}
+
+// 현재 표시되는 이미지 상태(표정)에 맞는 말풍선 → 문구와 이미지를 일치시킨다.
+export function speechForState(
+  pet: Pet,
+  state: PetImageState,
+  seed = 0
+): string {
+  const dog = pet.species === "dog";
+  switch (state) {
+    case "sleeping":
+      return "쿨쿨… (기분 좋은 꿈을 꾸는 중)";
+    case "eating":
+      return seededPick(["냠냠, 맛있어!", "잘 먹을게!", "이거 좋아해!"], seed);
+    case "bad":
+      return dog
+        ? seededPick(["으으, 부끄러워…", "살살 해줘~"], seed)
+        : seededPick(
+            ["목욕은 좀 싫은데…", "이건 참아줄게…", "칫, 어쩔 수 없네."],
+            seed
+          );
+    case "happy":
+      return dog
+        ? seededPick(
+            ["오늘 기분 최고야!", "헤헤, 너무 좋아!", "같이 있어서 행복해!"],
+            seed
+          )
+        : seededPick(
+            ["기분이 아주 좋아!", "골골골…", "오늘은 꽤 만족스러워."],
+            seed
+          );
+    case "walking":
+    case "playing":
+      return seededPick(["신난다!", "재밌어!", "조금 더 놀자!"], seed);
+    default:
+      return moodSpeechSeeded(pet, seed);
+  }
+}
+
+function moodSpeechSeeded(pet: Pet, seed: number): string {
+  const mood = computeMood(pet);
+  switch (mood) {
+    case "hungry":
+      return seededPick(["배에서 꼬르륵 소리가 나…", "밥 먹을 시간인가?"], seed);
+    case "tired":
+      return seededPick(["조금 졸린 것 같아.", "하암… 쉬고 싶어."], seed);
+    case "dirty":
+      return seededPick(["슬슬 씻고 싶어.", "몸이 근질근질해."], seed);
+    case "bored":
+      return seededPick(["조금 심심해.", "나랑 놀아줘!"], seed);
+    case "happy":
+      return pet.species === "dog" ? "오늘 기분 최고야!" : "기분이 아주 좋아!";
+    default:
+      return seededPick(RANDOM_SPEECH[pet.id], seed);
   }
 }
 

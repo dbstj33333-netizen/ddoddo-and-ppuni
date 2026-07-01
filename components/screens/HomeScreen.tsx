@@ -5,7 +5,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { useGame } from "@/context/GameContext";
 import { useTimeBasedStatus } from "@/hooks/useTimeBasedStatus";
 import type { PetImageState } from "@/lib/constants";
-import { pickSpeech } from "@/lib/mood";
+import { computeMood, moodToImageState, speechForState } from "@/lib/mood";
 import type { PetId } from "@/lib/types";
 import BottomSheet from "../BottomSheet";
 import FoodSelector from "../FoodSelector";
@@ -39,26 +39,22 @@ export default function HomeScreen() {
 
   const [sheet, setSheet] = useState<"food" | "snack" | null>(null);
   const [sleepOpen, setSleepOpen] = useState(false);
-  const [speeches, setSpeeches] = useState<Record<PetId, string>>({
-    toto: "",
-    ppuni: "",
-  });
+  const [speechSeed, setSpeechSeed] = useState(0);
   const [imageStates, setImageStates] = useState<
     Partial<Record<PetId, PetImageState>>
   >({});
   const flashTimers = useRef<Record<string, number>>({});
 
+  // 말풍선 문구를 가끔 바꿔주는 시드 (내용은 현재 표정과 일치)
   useEffect(() => {
-    const roll = () =>
-      setSpeeches({
-        toto: pickSpeech(state.pets.toto),
-        ppuni: pickSpeech(state.pets.ppuni),
-      });
-    roll();
-    const id = window.setInterval(roll, 18000);
+    const id = window.setInterval(() => setSpeechSeed((s) => s + 1), 14000);
     return () => window.clearInterval(id);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  // 현재 표시되는 이미지 상태 = 플래시 우선, 없으면 무드 기반
+  const displayState: PetImageState =
+    imageStates[selectedPet.id] ?? moodToImageState(computeMood(selectedPet));
+  const speech = speechForState(selectedPet, displayState, speechSeed);
 
   const flashState = useCallback(
     (petId: PetId, imgState: PetImageState, ms = 1600) => {
@@ -145,7 +141,7 @@ export default function HomeScreen() {
         <PetRoom
           pets={pets}
           selectedId={selectedPet.id}
-          speech={speeches[selectedPet.id]}
+          speech={speech}
           imageState={imageStates[selectedPet.id]}
           timeOfDay={timeOfDay}
           onStroke={handleStroke}

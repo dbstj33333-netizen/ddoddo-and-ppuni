@@ -16,7 +16,7 @@ export default function PetSpeechBubble({
       : "border-cream-deep";
   return (
     <div
-      className={`relative max-w-[10rem] rounded-2xl border-2 ${border} bg-card px-3 py-1.5 text-center text-xs font-medium leading-snug text-cocoa shadow-sm animate-pop`}
+      className={`relative whitespace-nowrap rounded-2xl border-2 ${border} bg-card px-3 py-1.5 text-center text-xs font-medium leading-snug text-cocoa shadow-sm animate-pop`}
     >
       {text}
       <span
