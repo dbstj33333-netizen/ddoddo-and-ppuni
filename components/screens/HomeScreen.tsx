@@ -35,7 +35,7 @@ export default function HomeScreen() {
     wash,
     pushToast,
   } = useGame();
-  const { greeting, timeOfDay } = useTimeBasedStatus();
+  const { timeOfDay } = useTimeBasedStatus();
 
   const [sheet, setSheet] = useState<"food" | "snack" | null>(null);
   const [sleepOpen, setSleepOpen] = useState(false);
@@ -102,6 +102,12 @@ export default function HomeScreen() {
     if (r.ok) flashState(selectedPet.id, "happy");
   };
 
+  // 쓰다듬으면 잠깐 happy 표정으로 전환
+  const handleStroke = (petId: PetId) => {
+    strokePet(petId);
+    flashState(petId, "happy", 1500);
+  };
+
   // 산책/놀기: 누르면 바로 다녀온 것으로 처리하고 만족한 표정으로 전환
   const handleWalk = () => {
     if (selectedPet.isSleeping) return;
@@ -136,16 +142,11 @@ export default function HomeScreen() {
           speech={speeches[selectedPet.id]}
           imageState={imageStates[selectedPet.id]}
           timeOfDay={timeOfDay}
-          onStroke={strokePet}
+          onStroke={handleStroke}
         />
 
-        {/* 상단 오버레이: 인사 · 간식 · 알림 */}
-        <div className="pointer-events-none absolute inset-x-3 top-3 flex items-start justify-between gap-2">
-          <div className="pointer-events-auto max-w-[52%] rounded-full bg-white/75 px-3 py-1.5 shadow-sm backdrop-blur">
-            <p className="truncate font-display text-sm text-cocoa">
-              {greeting}
-            </p>
-          </div>
+        {/* 상단 오버레이: 간식 · 알림 */}
+        <div className="pointer-events-none absolute inset-x-3 top-3 flex items-start justify-end gap-2">
           <div className="flex items-center gap-2">
             <span className="pointer-events-auto flex items-center gap-1 rounded-full bg-white/75 px-3 py-1.5 text-sm font-bold text-cocoa shadow-sm backdrop-blur">
               🍪 {state.inventory.snacks}
