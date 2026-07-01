@@ -1,51 +1,42 @@
 "use client";
 
-// 선택된 동물의 5가지 상태 (컴팩트 2열) + 한 줄 상태 문구
-import { AFFECTION_LEVEL_NAMES } from "@/lib/constants";
-import { statPhrase } from "@/lib/status";
-import type { Pet, StatKey } from "@/lib/types";
-import StatusBar from "./StatusBar";
+// 선택된 동물의 5가지 상태를 슬림한 한 줄 스트립으로 표시 (캐릭터가 메인이므로 축소)
+import { HOME_STAT_ORDER, STAT_META } from "@/lib/constants";
+import { GRADE_COLOR, gradeOf } from "@/lib/status";
+import type { Pet } from "@/lib/types";
 
 export default function PetStatusPanel({ pet }: { pet: Pet }) {
-  const care: StatKey[] = ["fullness", "happiness", "energy", "cleanliness"];
-  let worst: StatKey = care[0];
-  care.forEach((s) => {
-    if ((pet[s] as number) < (pet[worst] as number)) worst = s;
-  });
-  const allGood = care.every((s) => (pet[s] as number) >= 80);
-  const headline = allGood
-    ? `${pet.name}의 상태가 아주 좋아요!`
-    : statPhrase(worst, pet[worst] as number);
-
   return (
     <section
-      className="rounded-3xl border border-cream-deep bg-card p-3.5 shadow-sm"
+      className="rounded-2xl border border-cream-deep bg-card px-2.5 py-2 shadow-sm"
       aria-label={`${pet.name}의 상태`}
     >
-      <div className="mb-2 flex items-center justify-between gap-2">
-        <h2 className="font-display text-base text-cocoa">
-          {pet.name}의 상태
-        </h2>
-        <span className="truncate text-xs text-cocoa-soft">
-          Lv.{pet.affectionLevel} · {AFFECTION_LEVEL_NAMES[pet.affectionLevel - 1]}
-        </span>
-      </div>
-
-      <p
-        className="mb-2.5 rounded-xl bg-cream px-3 py-1.5 text-xs font-medium text-cocoa"
-        aria-live="polite"
-      >
-        {headline}
-      </p>
-
-      <div className="grid grid-cols-2 gap-x-4 gap-y-2">
-        <StatusBar stat="fullness" value={pet.fullness} compact />
-        <StatusBar stat="happiness" value={pet.happiness} compact />
-        <StatusBar stat="energy" value={pet.energy} compact />
-        <StatusBar stat="cleanliness" value={pet.cleanliness} compact />
-        <div className="col-span-2">
-          <StatusBar stat="affection" value={pet.affection} compact />
-        </div>
+      <div className="grid grid-cols-5 gap-1.5">
+        {HOME_STAT_ORDER.map((stat) => {
+          const value = Math.round(pet[stat] as number);
+          const color = GRADE_COLOR[gradeOf(value)];
+          const meta = STAT_META[stat];
+          return (
+            <div
+              key={stat}
+              className="flex flex-col items-center gap-1"
+              aria-label={`${meta.label} ${value}점`}
+            >
+              <span aria-hidden className="text-base leading-none">
+                {meta.emoji}
+              </span>
+              <div className="h-1.5 w-full overflow-hidden rounded-full bg-cream-deep">
+                <div
+                  className="h-full rounded-full transition-[width] duration-500"
+                  style={{ width: `${Math.max(4, value)}%`, backgroundColor: color }}
+                />
+              </div>
+              <span className="text-[10px] font-bold tabular-nums text-cocoa-soft">
+                {value}
+              </span>
+            </div>
+          );
+        })}
       </div>
     </section>
   );

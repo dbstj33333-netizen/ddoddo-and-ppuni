@@ -12,7 +12,7 @@ const SIZE_PX: Record<"sm" | "md" | "lg" | "xl", number> = {
   sm: 84,
   md: 132,
   lg: 168,
-  xl: 200,
+  xl: 232,
 };
 
 export default function PetCharacter({

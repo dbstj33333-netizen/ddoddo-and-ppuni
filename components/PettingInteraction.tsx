@@ -18,6 +18,7 @@ export default function PettingInteraction({
   selected,
   imageState,
   size = "lg",
+  showName = true,
   onSelect,
   onStroke,
 }: {
@@ -25,6 +26,7 @@ export default function PettingInteraction({
   selected: boolean;
   imageState?: PetImageState;
   size?: "md" | "lg" | "xl";
+  showName?: boolean;
   onSelect: (id: PetId) => void;
   onStroke: (id: PetId) => void;
 }) {
@@ -122,15 +124,17 @@ export default function PettingInteraction({
       <PetCharacter pet={pet} state={imageState} size={size} />
 
       {/* 이름표 */}
-      <div className="mt-1 flex justify-center">
-        <span
-          className={`rounded-full px-3 py-0.5 text-xs font-bold text-white shadow-sm ${
-            accent === "toto" ? "bg-toto" : "bg-ppuni"
-          }`}
-        >
-          {pet.name}
-        </span>
-      </div>
+      {showName && (
+        <div className="mt-1 flex justify-center">
+          <span
+            className={`rounded-full px-3 py-0.5 text-xs font-bold text-white shadow-sm ${
+              accent === "toto" ? "bg-toto" : "bg-ppuni"
+            }`}
+          >
+            {pet.name}
+          </span>
+        </div>
+      )}
 
       {/* 하트/반짝임 이펙트 */}
       {hearts.map((h) => (

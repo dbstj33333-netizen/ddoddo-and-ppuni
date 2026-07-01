@@ -119,42 +119,8 @@ export default function HomeScreen() {
 
   return (
     <div className="flex h-full flex-col gap-2.5 px-4 pt-3 pb-3">
-      {/* 상단 인사/간식/알림 */}
-      <header className="flex shrink-0 items-center justify-between gap-3">
-        <div className="min-w-0">
-          <p className="font-display text-lg leading-tight text-cocoa">
-            {greeting}
-          </p>
-          <p className="truncate text-xs text-cocoa-soft">
-            {selectedPet.name}와 함께하는 시간이에요.
-          </p>
-        </div>
-        <div className="flex items-center gap-2">
-          <span className="flex items-center gap-1 rounded-full bg-butter/60 px-3 py-1.5 text-sm font-bold text-cocoa">
-            🍪 {state.inventory.snacks}
-          </span>
-          <button
-            type="button"
-            onClick={openNotifications}
-            aria-label="알림 보기"
-            className="no-tap-highlight grid h-10 w-10 place-items-center rounded-full bg-cream-deep text-lg transition active:scale-90"
-          >
-            🔔
-          </button>
-        </div>
-      </header>
-
-      {/* 동물 전환 세그먼트 (선택은 이 토글로만) */}
-      <div className="shrink-0">
-        <PetSelector
-          pets={pets}
-          selectedId={selectedPet.id}
-          onSelect={selectPet}
-        />
-      </div>
-
-      {/* 반려동물 공간 (한 마리만, 남는 높이를 채움) */}
-      <div className="min-h-0 flex-1">
+      {/* 메인: 캐릭터 방 (컨트롤은 위에 오버레이) */}
+      <div className="relative min-h-0 flex-1">
         <PetRoom
           pets={pets}
           selectedId={selectedPet.id}
@@ -164,19 +130,56 @@ export default function HomeScreen() {
           onSelect={selectPet}
           onStroke={strokePet}
         />
+
+        {/* 상단 오버레이: 인사 · 간식 · 알림 */}
+        <div className="pointer-events-none absolute inset-x-3 top-3 flex items-start justify-between gap-2">
+          <div className="pointer-events-auto max-w-[52%] rounded-full bg-white/75 px-3 py-1.5 shadow-sm backdrop-blur">
+            <p className="truncate font-display text-sm text-cocoa">
+              {greeting}
+            </p>
+          </div>
+          <div className="flex items-center gap-2">
+            <span className="pointer-events-auto flex items-center gap-1 rounded-full bg-white/75 px-3 py-1.5 text-sm font-bold text-cocoa shadow-sm backdrop-blur">
+              🍪 {state.inventory.snacks}
+            </span>
+            <button
+              type="button"
+              onClick={openNotifications}
+              aria-label="알림 보기"
+              className="no-tap-highlight pointer-events-auto grid h-9 w-9 place-items-center rounded-full bg-white/75 text-lg shadow-sm backdrop-blur transition active:scale-90"
+            >
+              🔔
+            </button>
+          </div>
+        </div>
+
+        {/* 수면 배너 오버레이 */}
+        {selectedPet.isSleeping && !sleepOpen && (
+          <button
+            type="button"
+            onClick={() => setSleepOpen(true)}
+            className="no-tap-highlight absolute inset-x-6 bottom-16 flex items-center justify-center gap-2 rounded-2xl bg-[#2c2a40]/95 px-4 py-2.5 text-sm font-bold text-white shadow-lg transition active:scale-95"
+          >
+            🌙 {selectedPet.name}가 자고 있어요 · 수면 화면 열기
+          </button>
+        )}
+
+        {/* 하단 오버레이: 동물 전환 토글 (선택은 이 토글로만) */}
+        <div className="absolute inset-x-0 bottom-3 flex justify-center">
+          <div className="w-60 max-w-[80%] rounded-full shadow-md">
+            <PetSelector
+              pets={pets}
+              selectedId={selectedPet.id}
+              onSelect={selectPet}
+            />
+          </div>
+        </div>
       </div>
 
-      {/* 수면 중 배너 */}
-      {selectedPet.isSleeping && !sleepOpen && (
-        <button
-          type="button"
-          onClick={() => setSleepOpen(true)}
-          className="no-tap-highlight flex shrink-0 items-center justify-between rounded-2xl bg-[#2c2a40] px-4 py-2.5 text-sm font-bold text-white transition active:scale-95"
-        >
-          <span>🌙 {selectedPet.name}가 자고 있어요</span>
-          <span className="text-xs text-[#b6b1d4]">수면 화면 열기 →</span>
-        </button>
-      )}
+      {/* 상태 스트립 (슬림) */}
+      <div className="shrink-0">
+        <PetStatusPanel pet={selectedPet} />
+      </div>
 
       {/* 모든 돌봄 행동 */}
       <section
@@ -194,11 +197,6 @@ export default function HomeScreen() {
           onSleepToggle={handleSleepToggle}
         />
       </section>
-
-      {/* 선택 동물 상태 */}
-      <div className="shrink-0">
-        <PetStatusPanel pet={selectedPet} />
-      </div>
 
       {/* 밥 시트 */}
       <BottomSheet
