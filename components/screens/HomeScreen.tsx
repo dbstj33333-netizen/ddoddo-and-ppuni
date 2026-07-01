@@ -134,7 +134,32 @@ export default function HomeScreen() {
 
   return (
     <div className="flex h-full flex-col">
-      {/* 메인: 캐릭터 스테이지 (배경 위, 컨트롤은 오버레이) */}
+      {/* 상단 HUD: 재화 · 알림 + 상태바(위로 이동, 글래스 카드) */}
+      <div className="shrink-0 space-y-2 px-3 pt-2">
+        <div className="flex items-center justify-between gap-2">
+          <div className="flex items-center gap-1.5">
+            <span className="flex items-center gap-1 rounded-full border border-white/60 bg-white/85 px-3 py-1.5 text-sm font-extrabold text-cocoa shadow-sm backdrop-blur">
+              🪙 {state.inventory.coins}
+            </span>
+            <span className="flex items-center gap-1 rounded-full border border-white/60 bg-white/85 px-3 py-1.5 text-sm font-extrabold text-cocoa shadow-sm backdrop-blur">
+              🍪 {state.inventory.snacks}
+            </span>
+          </div>
+          <button
+            type="button"
+            onClick={openNotifications}
+            aria-label="알림 보기"
+            className="no-tap-highlight grid h-9 w-9 place-items-center rounded-full border border-white/60 bg-white/85 text-lg shadow-sm backdrop-blur transition active:scale-90"
+          >
+            🔔
+          </button>
+        </div>
+        <div className="rounded-3xl border border-white/60 bg-white/60 px-3 py-2.5 shadow-sm backdrop-blur-md">
+          <PetStatusPanel pet={selectedPet} />
+        </div>
+      </div>
+
+      {/* 캐릭터 스테이지 */}
       <div className="relative min-h-0 flex-1">
         <PetRoom
           pets={pets}
@@ -143,23 +168,6 @@ export default function HomeScreen() {
           imageState={imageStates[selectedPet.id]}
           onStroke={handleStroke}
         />
-
-        {/* 상단 오버레이: 간식 · 알림 */}
-        <div className="pointer-events-none absolute inset-x-3 top-3 flex items-start justify-end gap-2">
-          <div className="flex items-center gap-2">
-            <span className="pointer-events-auto flex items-center gap-1 rounded-full bg-white/80 px-3 py-1.5 text-sm font-bold text-cocoa shadow-sm backdrop-blur">
-              🍪 {state.inventory.snacks}
-            </span>
-            <button
-              type="button"
-              onClick={openNotifications}
-              aria-label="알림 보기"
-              className="no-tap-highlight pointer-events-auto grid h-9 w-9 place-items-center rounded-full bg-white/80 text-lg shadow-sm backdrop-blur transition active:scale-90"
-            >
-              🔔
-            </button>
-          </div>
-        </div>
 
         {/* 수면 배너 오버레이 */}
         {selectedPet.isSleeping && !sleepOpen && (
@@ -184,10 +192,9 @@ export default function HomeScreen() {
         </div>
       </div>
 
-      {/* 하단 패널: 상태 + 돌봄 행동 (풀블리드, 라운드 없음) */}
-      <div className="shrink-0 border-t border-cream-deep bg-card/95 backdrop-blur">
-        <div className="space-y-2.5 px-3 py-3">
-          <PetStatusPanel pet={selectedPet} />
+      {/* 하단: 플로팅 액션바 (글래스) */}
+      <div className="shrink-0 px-3 pb-1">
+        <div className="rounded-3xl border border-white/60 bg-white/80 px-2 py-2 shadow-[0_10px_28px_-10px_rgba(92,68,51,0.45)] backdrop-blur-md">
           <QuickActionMenu
             pet={selectedPet}
             onFeed={() => setSheet("food")}
