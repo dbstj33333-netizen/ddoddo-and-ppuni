@@ -22,7 +22,7 @@ export default function SettingsScreen() {
   ];
 
   return (
-    <div className="h-full space-y-5 overflow-y-auto scroll-slim px-4 pt-4 pb-4">
+    <div className="h-full space-y-5 overflow-y-auto scroll-slim bg-cream px-4 pt-4 pb-4">
       <header>
         <h1 className="font-display text-xl text-cocoa">설정</h1>
         <p className="text-xs text-cocoa-soft">앱을 내 취향에 맞게 바꿔보세요.</p>

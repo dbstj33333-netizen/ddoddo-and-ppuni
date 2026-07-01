@@ -17,13 +17,17 @@ export default function AppShell() {
   return (
     <div className="flex min-h-dvh w-full justify-center bg-cream">
       {/* 실제 앱 화면: 모든 기기에서 화면을 꽉 채우는 반응형 컬럼.
+          배경(잔디/하늘)을 화면 전체에 깔아 주변 여백을 없앤다.
           transform 으로 내부 fixed 오버레이를 이 컬럼 안에 가둔다. */}
       <div
-        className="relative flex h-dvh w-full max-w-[520px] flex-col overflow-hidden bg-cream transform-gpu"
-        style={{ transform: "translateZ(0)" }}
+        className="relative flex h-dvh w-full max-w-[520px] flex-col overflow-hidden bg-cream bg-cover bg-center transform-gpu"
+        style={{
+          transform: "translateZ(0)",
+          backgroundImage: "url('/images/room-bg.png')",
+        }}
       >
         {!ready ? (
-          <div className="grid flex-1 place-items-center">
+          <div className="grid flex-1 place-items-center bg-cream">
             <div className="flex flex-col items-center gap-3">
               <div className="flex gap-2 text-5xl">
                 <span className="animate-bob">🐶</span>

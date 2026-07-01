@@ -7,10 +7,7 @@ import type { Pet } from "@/lib/types";
 
 export default function PetStatusPanel({ pet }: { pet: Pet }) {
   return (
-    <section
-      className="rounded-2xl border border-cream-deep bg-card px-2.5 py-2 shadow-sm"
-      aria-label={`${pet.name}의 상태`}
-    >
+    <section aria-label={`${pet.name}의 상태`}>
       <div className="grid grid-cols-5 gap-1.5">
         {HOME_STAT_ORDER.map((stat) => {
           const value = Math.round(pet[stat] as number);

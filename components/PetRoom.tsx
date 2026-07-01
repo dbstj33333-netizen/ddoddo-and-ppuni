@@ -1,6 +1,6 @@
 "use client";
 
-// 아늑한 방 = 화면의 메인. 하늘·잔디 배경 위에 선택된 한 마리를 크게 보여준다.
+// 캐릭터 스테이지 (배경은 화면 전체를 채우므로 여기서는 투명).
 import { useEffect, useState } from "react";
 import type { PetImageState } from "@/lib/constants";
 import type { Pet, PetId } from "@/lib/types";
@@ -31,14 +31,12 @@ export default function PetRoom({
   selectedId,
   speech,
   imageState,
-  timeOfDay,
   onStroke,
 }: {
   pets: Pet[];
   selectedId: PetId;
   speech: string;
   imageState?: PetImageState;
-  timeOfDay: "morning" | "day" | "night";
   onStroke: (id: PetId) => void;
 }) {
   const pet = pets.find((p) => p.id === selectedId) ?? pets[0];
@@ -59,29 +57,18 @@ export default function PetRoom({
   }, []);
 
   return (
-    <div
-      className="relative flex h-full min-h-0 flex-col items-center justify-end overflow-hidden rounded-[2rem] border border-cream-deep bg-cover bg-center pb-14 pt-6 shadow-[0_12px_34px_-16px_rgba(92,68,51,0.5)]"
-      style={{ backgroundImage: "url('/images/room-bg.png')" }}
-    >
-      {/* 밤에는 살짝 어둡게 */}
-      {timeOfDay === "night" && (
-        <div
-          className="pointer-events-none absolute inset-0 bg-[#2c2a40]/25"
-          aria-hidden
-        />
-      )}
-
+    <div className="relative flex h-full min-h-0 flex-col items-center justify-end pb-10 pt-4">
       {/* 가끔 지나가는 노란 나비 */}
       {flyKey > 0 && <Butterfly key={flyKey} />}
 
-      {/* 중앙 하단: 말풍선 + 캐릭터 (화면 크기에 맞춰 유동) */}
+      {/* 말풍선 + 캐릭터 (화면 크기에 맞춰 유동) */}
       <div className="relative flex min-h-0 flex-col items-center">
         <div className="mb-1">
           <PetSpeechBubble text={speech} accent={accent} />
         </div>
         <PettingInteraction
           pet={pet}
-          sizeCss="min(82vw, 44vh, 360px)"
+          sizeCss="min(66vw, 36vh, 290px)"
           showName={false}
           imageState={imageState}
           onStroke={onStroke}

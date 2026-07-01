@@ -3,7 +3,6 @@
 // 홈(메인): 한 마리만 표시 + 돌봄 행동을 한 화면에서 수행
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useGame } from "@/context/GameContext";
-import { useTimeBasedStatus } from "@/hooks/useTimeBasedStatus";
 import type { PetImageState } from "@/lib/constants";
 import { computeMood, moodToImageState, speechForState } from "@/lib/mood";
 import type { PetId } from "@/lib/types";
@@ -35,7 +34,6 @@ export default function HomeScreen() {
     wash,
     pushToast,
   } = useGame();
-  const { timeOfDay } = useTimeBasedStatus();
 
   const [sheet, setSheet] = useState<"food" | "snack" | null>(null);
   const [sleepOpen, setSleepOpen] = useState(false);
@@ -135,29 +133,28 @@ export default function HomeScreen() {
   };
 
   return (
-    <div className="flex h-full flex-col gap-3 px-4 pt-5 pb-5">
-      {/* 메인: 캐릭터 방 (컨트롤은 위에 오버레이) */}
+    <div className="flex h-full flex-col">
+      {/* 메인: 캐릭터 스테이지 (배경 위, 컨트롤은 오버레이) */}
       <div className="relative min-h-0 flex-1">
         <PetRoom
           pets={pets}
           selectedId={selectedPet.id}
           speech={speech}
           imageState={imageStates[selectedPet.id]}
-          timeOfDay={timeOfDay}
           onStroke={handleStroke}
         />
 
         {/* 상단 오버레이: 간식 · 알림 */}
         <div className="pointer-events-none absolute inset-x-3 top-3 flex items-start justify-end gap-2">
           <div className="flex items-center gap-2">
-            <span className="pointer-events-auto flex items-center gap-1 rounded-full bg-white/75 px-3 py-1.5 text-sm font-bold text-cocoa shadow-sm backdrop-blur">
+            <span className="pointer-events-auto flex items-center gap-1 rounded-full bg-white/80 px-3 py-1.5 text-sm font-bold text-cocoa shadow-sm backdrop-blur">
               🍪 {state.inventory.snacks}
             </span>
             <button
               type="button"
               onClick={openNotifications}
               aria-label="알림 보기"
-              className="no-tap-highlight pointer-events-auto grid h-9 w-9 place-items-center rounded-full bg-white/75 text-lg shadow-sm backdrop-blur transition active:scale-90"
+              className="no-tap-highlight pointer-events-auto grid h-9 w-9 place-items-center rounded-full bg-white/80 text-lg shadow-sm backdrop-blur transition active:scale-90"
             >
               🔔
             </button>
@@ -177,7 +174,7 @@ export default function HomeScreen() {
 
         {/* 하단 오버레이: 동물 전환 토글 (선택은 이 토글로만) */}
         <div className="absolute inset-x-0 bottom-3 flex justify-center">
-          <div className="w-60 max-w-[80%] rounded-full shadow-md">
+          <div className="w-60 max-w-[80%] shadow-md">
             <PetSelector
               pets={pets}
               selectedId={selectedPet.id}
@@ -187,25 +184,20 @@ export default function HomeScreen() {
         </div>
       </div>
 
-      {/* 상태 스트립 (슬림) */}
-      <div className="shrink-0">
-        <PetStatusPanel pet={selectedPet} />
+      {/* 하단 패널: 상태 + 돌봄 행동 (풀블리드, 라운드 없음) */}
+      <div className="shrink-0 border-t border-cream-deep bg-card/95 backdrop-blur">
+        <div className="space-y-2.5 px-3 py-3">
+          <PetStatusPanel pet={selectedPet} />
+          <QuickActionMenu
+            pet={selectedPet}
+            onFeed={() => setSheet("food")}
+            onSnack={() => setSheet("snack")}
+            onWalk={handleWalk}
+            onWash={handleWash}
+            onSleepToggle={handleSleepToggle}
+          />
+        </div>
       </div>
-
-      {/* 돌봄 행동 (쓰다듬기는 캐릭터를 터치) */}
-      <section
-        className="shrink-0 rounded-3xl border border-cream-deep bg-card p-3 shadow-sm"
-        aria-label="돌봄 행동"
-      >
-        <QuickActionMenu
-          pet={selectedPet}
-          onFeed={() => setSheet("food")}
-          onSnack={() => setSheet("snack")}
-          onWalk={handleWalk}
-          onWash={handleWash}
-          onSleepToggle={handleSleepToggle}
-        />
-      </section>
 
       {/* 밥 시트 */}
       <BottomSheet
