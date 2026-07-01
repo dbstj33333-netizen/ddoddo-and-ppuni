@@ -37,7 +37,10 @@ export default function AppShell() {
           <>
             <Toast />
 
-            <main className="min-h-0 flex-1">
+            <main
+              className="min-h-0 flex-1"
+              style={{ paddingTop: "env(safe-area-inset-top)" }}
+            >
               <div key={tab} className="h-full animate-fade-in">
                 {tab === "home" && <HomeScreen />}
                 {tab === "settings" && <SettingsScreen />}

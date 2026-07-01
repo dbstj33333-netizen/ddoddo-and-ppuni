@@ -39,11 +39,6 @@ export default function PettingInteraction({
   const heartId = useRef(0);
 
   const accent = pet.id === "toto" ? "toto" : "ppuni";
-  const ring = selected
-    ? pet.id === "toto"
-      ? "ring-4 ring-toto"
-      : "ring-4 ring-ppuni"
-    : "ring-0";
 
   const spawnHeart = (clientX: number, clientY: number) => {
     const rect = containerRef.current?.getBoundingClientRect();
@@ -118,7 +113,7 @@ export default function PettingInteraction({
           onSelect(pet.id);
         }
       }}
-      className={`no-tap-highlight relative rounded-3xl p-2 transition ${ring}`}
+      className="no-tap-highlight relative rounded-3xl p-2"
       style={{ touchAction: "none" }}
     >
       <PetCharacter pet={pet} state={imageState} size={size} />

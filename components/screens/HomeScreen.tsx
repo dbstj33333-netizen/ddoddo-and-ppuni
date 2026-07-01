@@ -118,7 +118,7 @@ export default function HomeScreen() {
   const walkType = selectedPet.species === "dog" ? "walk" : "play";
 
   return (
-    <div className="flex h-full flex-col gap-2.5 px-4 pt-3 pb-3">
+    <div className="flex h-full flex-col gap-3 px-4 pt-5 pb-5">
       {/* 메인: 캐릭터 방 (컨트롤은 위에 오버레이) */}
       <div className="relative min-h-0 flex-1">
         <PetRoom
