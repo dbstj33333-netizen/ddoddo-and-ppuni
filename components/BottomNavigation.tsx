@@ -1,11 +1,10 @@
 "use client";
 
 // 하단 고정 내비게이션 (앱 프레임 내부에 위치)
-export type TabKey = "home" | "record" | "settings";
+export type TabKey = "home" | "settings";
 
 const TABS: { key: TabKey; label: string; emoji: string }[] = [
   { key: "home", label: "홈", emoji: "🏠" },
-  { key: "record", label: "기록", emoji: "📖" },
   { key: "settings", label: "설정", emoji: "⚙️" },
 ];
 

@@ -8,7 +8,6 @@ import BottomNavigation, { type TabKey } from "./BottomNavigation";
 import Onboarding from "./Onboarding";
 import Toast from "./Toast";
 import HomeScreen from "./screens/HomeScreen";
-import RecordScreen from "./screens/RecordScreen";
 import SettingsScreen from "./screens/SettingsScreen";
 
 export default function AppShell() {
@@ -41,7 +40,6 @@ export default function AppShell() {
             <main className="min-h-0 flex-1">
               <div key={tab} className="h-full animate-fade-in">
                 {tab === "home" && <HomeScreen />}
-                {tab === "record" && <RecordScreen />}
                 {tab === "settings" && <SettingsScreen />}
               </div>
             </main>
