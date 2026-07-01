@@ -1,34 +1,29 @@
 "use client";
 
-// 한 화면에서 가능한 모든 돌봄 행동 (둥근 아이콘 + 한글 이름)
+// 돌봄 행동 버튼 (쓰다듬기는 캐릭터 터치로, 사진은 제외)
 import type { Pet } from "@/lib/types";
 
 type Props = {
   pet: Pet;
-  onPet: () => void;
   onFeed: () => void;
   onSnack: () => void;
   onWalk: () => void;
   onWash: () => void;
-  onPhoto: () => void;
   onSleepToggle: () => void;
 };
 
 export default function QuickActionMenu({
   pet,
-  onPet,
   onFeed,
   onSnack,
   onWalk,
   onWash,
-  onPhoto,
   onSleepToggle,
 }: Props) {
   const sleeping = pet.isSleeping;
   const walkLabel = pet.species === "dog" ? "산책" : "놀아주기";
 
   const items = [
-    { key: "pet", emoji: "🤲", label: "쓰다듬기", onClick: onPet, disabled: sleeping },
     { key: "feed", emoji: "🍚", label: "밥 주기", onClick: onFeed, disabled: sleeping },
     { key: "snack", emoji: "🍪", label: "간식 주기", onClick: onSnack, disabled: sleeping },
     {
@@ -39,7 +34,6 @@ export default function QuickActionMenu({
       disabled: sleeping,
     },
     { key: "wash", emoji: "🫧", label: "씻기", onClick: onWash, disabled: sleeping },
-    { key: "photo", emoji: "📸", label: "사진", onClick: onPhoto, disabled: sleeping },
     {
       key: "sleep",
       emoji: sleeping ? "☀️" : "🌙",
@@ -51,7 +45,7 @@ export default function QuickActionMenu({
   ];
 
   return (
-    <div className="grid grid-cols-4 gap-2">
+    <div className="grid grid-cols-5 gap-1.5">
       {items.map((it) => (
         <button
           key={it.key}

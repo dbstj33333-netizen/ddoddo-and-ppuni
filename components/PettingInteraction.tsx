@@ -1,33 +1,29 @@
 "use client";
 
-// 캐릭터를 문지르면(드래그) 쓰다듬기가 발동하고 하트가 튀어나온다.
-// 짧게 탭하면 해당 동물을 선택한다. 포인터 이벤트로 터치/마우스 모두 지원.
+// 캐릭터를 탭하거나 문지르면 쓰다듬기가 발동하고 하트가 튀어나온다.
+// 포인터 이벤트로 터치/마우스 모두 지원.
 import { useRef, useState } from "react";
 import type { PetImageState } from "@/lib/constants";
 import type { Pet, PetId } from "@/lib/types";
 import PetCharacter from "./PetCharacter";
 
 const STROKE_DISTANCE = 34; // 이 거리 이상 문지르면 쓰다듬기 1회
-const TAP_MOVE_TOLERANCE = 10; // 이 이하로 움직이면 탭(선택)으로 간주
+const TAP_MOVE_TOLERANCE = 10; // 이 이하로 움직이면 '탭'으로 간주
 
 type Heart = { id: number; x: number; y: number; emoji: string };
 const SPARKLES = ["💗", "✨", "💛", "⭐"];
 
 export default function PettingInteraction({
   pet,
-  selected,
   imageState,
   size = "lg",
   showName = true,
-  onSelect,
   onStroke,
 }: {
   pet: Pet;
-  selected: boolean;
   imageState?: PetImageState;
   size?: "md" | "lg" | "xl";
   showName?: boolean;
-  onSelect: (id: PetId) => void;
   onStroke: (id: PetId) => void;
 }) {
   const [hearts, setHearts] = useState<Heart[]>([]);
@@ -57,6 +53,12 @@ export default function PettingInteraction({
     );
   };
 
+  const petOnce = (x: number, y: number) => {
+    if (pet.isSleeping) return; // 자는 중엔 반응 없음
+    onStroke(pet.id);
+    spawnHeart(x, y);
+  };
+
   const onPointerDown = (e: React.PointerEvent) => {
     pressing.current = true;
     lastPos.current = { x: e.clientX, y: e.clientY };
@@ -78,19 +80,19 @@ export default function PettingInteraction({
     accumulated.current += dist;
     totalMove.current += dist;
 
-    if (!pet.isSleeping && accumulated.current >= STROKE_DISTANCE) {
+    // 문지르는 중: 일정 거리마다 쓰다듬기
+    if (accumulated.current >= STROKE_DISTANCE) {
       accumulated.current = 0;
-      onStroke(pet.id);
-      spawnHeart(e.clientX, e.clientY);
+      petOnce(e.clientX, e.clientY);
     }
   };
 
-  const endPress = () => {
+  const endPress = (e: React.PointerEvent) => {
     if (!pressing.current) return;
     pressing.current = false;
-    // 거의 안 움직였으면 탭 = 선택
+    // 거의 안 움직였으면 '탭' → 쓰다듬기 1회
     if (totalMove.current <= TAP_MOVE_TOLERANCE) {
-      onSelect(pet.id);
+      petOnce(e.clientX, e.clientY);
     }
     lastPos.current = null;
   };
@@ -100,8 +102,7 @@ export default function PettingInteraction({
       ref={containerRef}
       role="button"
       tabIndex={0}
-      aria-pressed={selected}
-      aria-label={`${pet.name} 선택하고 쓰다듬기`}
+      aria-label={`${pet.name} 쓰다듬기`}
       onPointerDown={onPointerDown}
       onPointerMove={onPointerMove}
       onPointerUp={endPress}
@@ -110,7 +111,7 @@ export default function PettingInteraction({
       onKeyDown={(e) => {
         if (e.key === "Enter" || e.key === " ") {
           e.preventDefault();
-          onSelect(pet.id);
+          if (!pet.isSleeping) onStroke(pet.id);
         }
       }}
       className="no-tap-highlight relative rounded-3xl p-2"

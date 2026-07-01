@@ -34,38 +34,30 @@ export default function PetCharacter({
     setImgOk(true);
   }, [effectiveState, pet.id]);
 
+  // 바닥에 앉은 느낌: 위아래로 떠다니지 않고 아래를 고정한 채 숨만 쉰다.
   const anim =
     effectiveState === "sleeping"
       ? ""
       : effectiveState === "eating"
       ? "animate-eat"
-      : effectiveState === "walking" || effectiveState === "playing"
-      ? "animate-bob"
-      : effectiveState === "happy"
-      ? "animate-bob"
-      : "animate-breathe";
-
-  const blob = pet.species === "dog" ? "bg-toto-soft" : "bg-ppuni-soft";
+      : "animate-breathe-ground";
 
   return (
     <div
-      className="relative grid place-items-center"
+      className="relative grid place-items-end justify-items-center"
       style={{ width: px, height: px }}
     >
-      {/* 바닥 그림자 */}
+      {/* 바닥 그림자 (앉아 있는 느낌) */}
       <div
-        className="absolute bottom-0 h-3 rounded-full bg-cocoa/15 blur-[2px]"
-        style={{ width: px * 0.55 }}
-        aria-hidden
-      />
-      {/* 파스텔 배경 블롭 */}
-      <div
-        className={`absolute rounded-[42%] ${blob} opacity-70`}
-        style={{ width: px * 0.86, height: px * 0.86 }}
+        className="absolute bottom-1 h-3 rounded-full bg-cocoa/20 blur-[2px]"
+        style={{ width: px * 0.5 }}
         aria-hidden
       />
 
-      <div className={`relative ${anim}`} style={{ width: px, height: px }}>
+      <div
+        className={`relative origin-bottom ${anim}`}
+        style={{ width: px, height: px }}
+      >
         {imgOk ? (
           /* eslint-disable-next-line @next/next/no-img-element */
           <img

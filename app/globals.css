@@ -24,6 +24,7 @@
 
   /* 애니메이션 */
   --animate-breathe: breathe 3.2s ease-in-out infinite;
+  --animate-breathe-ground: breatheGround 3.6s ease-in-out infinite;
   --animate-tail: tail 0.6s ease-in-out infinite;
   --animate-ear: ear 2.4s ease-in-out infinite;
   --animate-bob: bob 2.6s ease-in-out infinite;
@@ -40,6 +41,11 @@
 @keyframes breathe {
   0%, 100% { transform: translateY(0) scale(1); }
   50% { transform: translateY(-5px) scale(1.02); }
+}
+/* 바닥에 붙어 앉은 채 숨쉬는 느낌 (아래를 고정) */
+@keyframes breatheGround {
+  0%, 100% { transform: scaleY(1) scaleX(1); }
+  50% { transform: scaleY(1.03) scaleX(0.99); }
 }
 @keyframes tail {
   0%, 100% { transform: rotate(-8deg); }

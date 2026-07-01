@@ -1,6 +1,6 @@
 "use client";
 
-// 홈(메인): 한 마리만 표시 + 모든 돌봄 행동을 한 화면에서 수행
+// 홈(메인): 한 마리만 표시 + 돌봄 행동을 한 화면에서 수행
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useGame } from "@/context/GameContext";
 import { useTimeBasedStatus } from "@/hooks/useTimeBasedStatus";
@@ -15,7 +15,9 @@ import PetStatusPanel from "../PetStatusPanel";
 import QuickActionMenu from "../QuickActionMenu";
 import SleepMode from "../SleepMode";
 import SnackSelector from "../SnackSelector";
-import WalkingTimer from "../WalkingTimer";
+
+// 산책/놀이 1회 기본 시간(내부값). 사용자에게 분 선택을 묻지 않는다.
+const ACTIVITY_MINUTES = 3;
 
 export default function HomeScreen() {
   const {
@@ -31,13 +33,11 @@ export default function HomeScreen() {
     wake,
     completeActivity,
     wash,
-    takePhoto,
     pushToast,
   } = useGame();
   const { greeting, timeOfDay } = useTimeBasedStatus();
 
   const [sheet, setSheet] = useState<"food" | "snack" | null>(null);
-  const [activityOpen, setActivityOpen] = useState(false);
   const [sleepOpen, setSleepOpen] = useState(false);
   const [speeches, setSpeeches] = useState<Record<PetId, string>>({
     toto: "",
@@ -102,9 +102,20 @@ export default function HomeScreen() {
     if (r.ok) flashState(selectedPet.id, "happy");
   };
 
-  const handlePhoto = () => {
-    const r = takePhoto(selectedPet.id);
-    if (r.ok) flashState(selectedPet.id, "happy");
+  // 산책/놀기: 누르면 바로 다녀온 것으로 처리하고 만족한 표정으로 전환
+  const handleWalk = () => {
+    if (selectedPet.isSleeping) return;
+    const type = selectedPet.species === "dog" ? "walk" : "play";
+    const r = completeActivity(selectedPet.id, type, ACTIVITY_MINUTES);
+    flashState(selectedPet.id, "happy", 3000);
+    const extra = r.foundSnack ? " 산책 중 간식도 발견했어요! 🍪" : "";
+    pushToast(
+      selectedPet.species === "dog"
+        ? `${selectedPet.name}와 즐겁게 산책하고 왔어요!${extra}`
+        : `${selectedPet.name}와 신나게 놀고 왔어요!${extra}`,
+      "success",
+      "🐾"
+    );
   };
 
   const openNotifications = () => {
@@ -114,8 +125,6 @@ export default function HomeScreen() {
       "🔔"
     );
   };
-
-  const walkType = selectedPet.species === "dog" ? "walk" : "play";
 
   return (
     <div className="flex h-full flex-col gap-3 px-4 pt-5 pb-5">
@@ -127,7 +136,6 @@ export default function HomeScreen() {
           speech={speeches[selectedPet.id]}
           imageState={imageStates[selectedPet.id]}
           timeOfDay={timeOfDay}
-          onSelect={selectPet}
           onStroke={strokePet}
         />
 
@@ -181,19 +189,17 @@ export default function HomeScreen() {
         <PetStatusPanel pet={selectedPet} />
       </div>
 
-      {/* 모든 돌봄 행동 */}
+      {/* 돌봄 행동 (쓰다듬기는 캐릭터를 터치) */}
       <section
         className="shrink-0 rounded-3xl border border-cream-deep bg-card p-3 shadow-sm"
         aria-label="돌봄 행동"
       >
         <QuickActionMenu
           pet={selectedPet}
-          onPet={() => strokePet(selectedPet.id)}
           onFeed={() => setSheet("food")}
           onSnack={() => setSheet("snack")}
-          onWalk={() => setActivityOpen(true)}
+          onWalk={handleWalk}
           onWash={handleWash}
-          onPhoto={handlePhoto}
           onSleepToggle={handleSleepToggle}
         />
       </section>
@@ -221,18 +227,6 @@ export default function HomeScreen() {
           onPick={handleSnackPick}
         />
       </BottomSheet>
-
-      {/* 산책/놀이 오버레이 */}
-      {activityOpen && (
-        <WalkingTimer
-          pet={selectedPet}
-          type={walkType}
-          onComplete={(minutes) =>
-            completeActivity(selectedPet.id, walkType, minutes)
-          }
-          onClose={() => setActivityOpen(false)}
-        />
-      )}
 
       {/* 수면 오버레이 */}
       {sleepOpen && selectedPet.isSleeping && (

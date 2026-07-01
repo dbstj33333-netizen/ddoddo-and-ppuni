@@ -12,7 +12,6 @@ export default function PetRoom({
   speech,
   imageState,
   timeOfDay,
-  onSelect,
   onStroke,
 }: {
   pets: Pet[];
@@ -20,7 +19,6 @@ export default function PetRoom({
   speech: string;
   imageState?: PetImageState;
   timeOfDay: "morning" | "day" | "night";
-  onSelect: (id: PetId) => void;
   onStroke: (id: PetId) => void;
 }) {
   const pet = pets.find((p) => p.id === selectedId) ?? pets[0];
@@ -46,11 +44,9 @@ export default function PetRoom({
         </div>
         <PettingInteraction
           pet={pet}
-          selected
           size="xl"
           showName={false}
           imageState={imageState}
-          onSelect={onSelect}
           onStroke={onStroke}
         />
       </div>
