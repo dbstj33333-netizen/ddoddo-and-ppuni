@@ -187,6 +187,14 @@ export function createInitialState(): GameState {
   };
 }
 
+// 배포 하위 경로 접두사 (GitHub Pages 등). 로컬은 빈 문자열.
+export const ASSET_PREFIX = process.env.NEXT_PUBLIC_BASE_PATH ?? "";
+
+// public 자산 경로에 배포 접두사를 붙인다.
+export function assetPath(path: string): string {
+  return `${ASSET_PREFIX}${path}`;
+}
+
 // 캐릭터 이미지 경로 (상태별). 파일만 교체하면 됨.
 export type PetImageState =
   | "default"
@@ -198,5 +206,5 @@ export type PetImageState =
   | "bad";
 
 export function petImagePath(id: PetId, state: PetImageState): string {
-  return `/images/pets/${id}-${state}.png`;
+  return `${ASSET_PREFIX}/images/pets/${id}-${state}.png`;
 }

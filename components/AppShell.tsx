@@ -4,6 +4,7 @@
 // 내부 스크롤 + 하단 고정 내비 구조로 네이티브 앱처럼 동작한다.
 import { useState } from "react";
 import { useGame } from "@/context/GameContext";
+import { assetPath } from "@/lib/constants";
 import BottomNavigation, { type TabKey } from "./BottomNavigation";
 import Onboarding from "./Onboarding";
 import Toast from "./Toast";
@@ -24,7 +25,8 @@ export default function AppShell() {
         style={{
           transform: "translateZ(0)",
           // 배경(잔디/하늘)은 홈에서만. 설정에서는 베이지(크림) 배경.
-          backgroundImage: tab === "home" ? "url('/images/room-bg.png')" : "none",
+          backgroundImage:
+            tab === "home" ? `url('${assetPath("/images/room-bg.png")}')` : "none",
         }}
       >
         {!ready ? (
