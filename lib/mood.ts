@@ -18,9 +18,10 @@ export function computeMood(pet: Pet): Mood {
   ];
   entries.sort((a, b) => a[1] - b[1]);
   const [lowestMood, lowestVal] = entries[0];
-  // 심하게 낮은 상태가 없고 행복도가 높으면 = 기분 좋음 → happy
+  // 심하게 낮은 상태가 없고 행복도가 충분히 높으면 = 기분 좋음 → happy.
+  // 초기값(또또 75 / 쁘니 70)에서는 default 로 시작하도록 기준을 80 으로 둔다.
   if (lowestVal < 40) return lowestMood;
-  if (happiness >= 70) return "happy";
+  if (happiness >= 80) return "happy";
   return "neutral";
 }
 
