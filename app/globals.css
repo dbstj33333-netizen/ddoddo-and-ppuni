@@ -1,0 +1,128 @@
+@import "tailwindcss";
+
+/* ── 디자인 토큰 (Tailwind v4 @theme) ───────────────────── */
+@theme {
+  --color-cream: #fdf6e9;
+  --color-cream-deep: #f6ecd6;
+  --color-butter: #fce7ac;
+  --color-butter-soft: #fdf1c9;
+  --color-apricot: #f6c6a8;
+  --color-apricot-deep: #ef9f7d;
+  --color-sage: #a8d8b9;
+  --color-sage-deep: #7fc394;
+  --color-cocoa: #5c4433;
+  --color-cocoa-soft: #8a725f;
+  --color-cocoa-faint: #b6a596;
+  --color-toto: #8fb9de;
+  --color-toto-soft: #d6e6f4;
+  --color-ppuni: #f2b84b;
+  --color-ppuni-soft: #fbe6b8;
+  --color-card: #fffdf8;
+
+  --font-sans: var(--font-noto), system-ui, sans-serif;
+  --font-display: var(--font-jua), var(--font-noto), sans-serif;
+
+  /* 애니메이션 */
+  --animate-breathe: breathe 3.2s ease-in-out infinite;
+  --animate-tail: tail 0.6s ease-in-out infinite;
+  --animate-ear: ear 2.4s ease-in-out infinite;
+  --animate-bob: bob 2.6s ease-in-out infinite;
+  --animate-eat: eat 0.5s ease-in-out infinite;
+  --animate-pop: pop 0.3s ease-out;
+  --animate-shake: shake 0.4s ease-in-out;
+  --animate-fade-in: fadeIn 0.35s ease-out both;
+  --animate-slide-up: slideUp 0.32s cubic-bezier(0.22, 1, 0.36, 1) both;
+  --animate-float-heart: floatHeart 1.1s ease-out forwards;
+  --animate-zzz: zzz 2.4s ease-in-out infinite;
+  --animate-sparkle: sparkle 1.2s ease-in-out infinite;
+}
+
+@keyframes breathe {
+  0%, 100% { transform: translateY(0) scale(1); }
+  50% { transform: translateY(-5px) scale(1.02); }
+}
+@keyframes tail {
+  0%, 100% { transform: rotate(-8deg); }
+  50% { transform: rotate(10deg); }
+}
+@keyframes ear {
+  0%, 100% { transform: rotate(0deg); }
+  50% { transform: rotate(-6deg); }
+}
+@keyframes bob {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-6px); }
+}
+@keyframes eat {
+  0%, 100% { transform: translateY(0) rotate(0); }
+  50% { transform: translateY(3px) rotate(-3deg); }
+}
+@keyframes pop {
+  0% { transform: scale(0.9); }
+  55% { transform: scale(1.08); }
+  100% { transform: scale(1); }
+}
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  25% { transform: translateX(-4px) rotate(-2deg); }
+  75% { transform: translateX(4px) rotate(2deg); }
+}
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+@keyframes slideUp {
+  from { opacity: 0; transform: translateY(16px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+@keyframes floatHeart {
+  0% { opacity: 0; transform: translateY(0) scale(0.5); }
+  20% { opacity: 1; }
+  100% { opacity: 0; transform: translateY(-70px) scale(1.1); }
+}
+@keyframes zzz {
+  0% { opacity: 0; transform: translateY(0) translateX(0) scale(0.7); }
+  30% { opacity: 1; }
+  100% { opacity: 0; transform: translateY(-40px) translateX(16px) scale(1.2); }
+}
+@keyframes sparkle {
+  0%, 100% { opacity: 0.3; transform: scale(0.8) rotate(0deg); }
+  50% { opacity: 1; transform: scale(1.15) rotate(20deg); }
+}
+
+/* ── 베이스 ──────────────────────────────────────────── */
+html {
+  -webkit-text-size-adjust: 100%;
+}
+body {
+  background: var(--color-cream);
+  color: var(--color-cocoa);
+  font-family: var(--font-sans);
+  overscroll-behavior-y: none;
+}
+
+/* 터치 시 파란 하이라이트 제거 & 의도치 않은 선택 방지 */
+.no-tap-highlight {
+  -webkit-tap-highlight-color: transparent;
+  -webkit-touch-callout: none;
+  user-select: none;
+}
+
+/* 스크롤바 슬림 (데스크톱) */
+.scroll-slim::-webkit-scrollbar { width: 6px; height: 6px; }
+.scroll-slim::-webkit-scrollbar-thumb {
+  background: var(--color-cocoa-faint);
+  border-radius: 999px;
+}
+
+/* 접근성: 모션 최소화 환경 */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
+}
