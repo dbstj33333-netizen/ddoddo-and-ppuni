@@ -1,6 +1,6 @@
 "use client";
 
-// 홈: 인사/간식/알림 + 반려동물 공간 + 상태 + 빠른 행동 + 각종 시트/오버레이
+// 홈(메인): 한 마리만 표시 + 모든 돌봄 행동을 한 화면에서 수행
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useGame } from "@/context/GameContext";
 import { useTimeBasedStatus } from "@/hooks/useTimeBasedStatus";
@@ -10,6 +10,7 @@ import type { PetId } from "@/lib/types";
 import BottomSheet from "../BottomSheet";
 import FoodSelector from "../FoodSelector";
 import PetRoom from "../PetRoom";
+import PetSelector from "../PetSelector";
 import PetStatusPanel from "../PetStatusPanel";
 import QuickActionMenu from "../QuickActionMenu";
 import SleepMode from "../SleepMode";
@@ -29,6 +30,8 @@ export default function HomeScreen() {
     startSleep,
     wake,
     completeActivity,
+    wash,
+    takePhoto,
     pushToast,
   } = useGame();
   const { greeting, timeOfDay } = useTimeBasedStatus();
@@ -45,7 +48,6 @@ export default function HomeScreen() {
   >({});
   const flashTimers = useRef<Record<string, number>>({});
 
-  // 말풍선: 마운트 + 주기적 리롤
   useEffect(() => {
     const roll = () =>
       setSpeeches({
@@ -95,6 +97,16 @@ export default function HomeScreen() {
     }
   };
 
+  const handleWash = () => {
+    const r = wash(selectedPet.id);
+    if (r.ok) flashState(selectedPet.id, "happy");
+  };
+
+  const handlePhoto = () => {
+    const r = takePhoto(selectedPet.id);
+    if (r.ok) flashState(selectedPet.id, "happy");
+  };
+
   const openNotifications = () => {
     pushToast(
       `오늘 밥 ${todayStats.meals}회 · 간식 ${todayStats.snacks}회 · ${state.streak.count}일 연속 돌봄 중!`,
@@ -106,15 +118,15 @@ export default function HomeScreen() {
   const walkType = selectedPet.species === "dog" ? "walk" : "play";
 
   return (
-    <div className="space-y-4">
+    <div className="flex h-full flex-col gap-2.5 px-4 pt-3 pb-3">
       {/* 상단 인사/간식/알림 */}
-      <header className="flex items-center justify-between gap-3">
+      <header className="flex shrink-0 items-center justify-between gap-3">
         <div className="min-w-0">
           <p className="font-display text-lg leading-tight text-cocoa">
             {greeting}
           </p>
-          <p className="text-xs text-cocoa-soft">
-            {state.pets.toto.name}와 {state.pets.ppuni.name}가 기다리고 있어요.
+          <p className="truncate text-xs text-cocoa-soft">
+            {selectedPet.name}와 함께하는 시간이에요.
           </p>
         </div>
         <div className="flex items-center gap-2">
@@ -132,46 +144,61 @@ export default function HomeScreen() {
         </div>
       </header>
 
-      {/* 반려동물 공간 */}
-      <PetRoom
-        pets={pets}
-        selectedId={selectedPet.id}
-        speeches={speeches}
-        imageStates={imageStates}
-        timeOfDay={timeOfDay}
-        onSelect={selectPet}
-        onStroke={strokePet}
-      />
+      {/* 동물 전환 세그먼트 (선택은 이 토글로만) */}
+      <div className="shrink-0">
+        <PetSelector
+          pets={pets}
+          selectedId={selectedPet.id}
+          onSelect={selectPet}
+        />
+      </div>
+
+      {/* 반려동물 공간 (한 마리만, 남는 높이를 채움) */}
+      <div className="min-h-0 flex-1">
+        <PetRoom
+          pets={pets}
+          selectedId={selectedPet.id}
+          speech={speeches[selectedPet.id]}
+          imageState={imageStates[selectedPet.id]}
+          timeOfDay={timeOfDay}
+          onSelect={selectPet}
+          onStroke={strokePet}
+        />
+      </div>
 
       {/* 수면 중 배너 */}
       {selectedPet.isSleeping && !sleepOpen && (
         <button
           type="button"
           onClick={() => setSleepOpen(true)}
-          className="no-tap-highlight flex w-full items-center justify-between rounded-2xl bg-[#2c2a40] px-4 py-3 text-sm font-bold text-white transition active:scale-95"
+          className="no-tap-highlight flex shrink-0 items-center justify-between rounded-2xl bg-[#2c2a40] px-4 py-2.5 text-sm font-bold text-white transition active:scale-95"
         >
           <span>🌙 {selectedPet.name}가 자고 있어요</span>
           <span className="text-xs text-[#b6b1d4]">수면 화면 열기 →</span>
         </button>
       )}
 
-      {/* 선택 동물 상태 */}
-      <PetStatusPanel pet={selectedPet} />
-
-      {/* 빠른 행동 */}
+      {/* 모든 돌봄 행동 */}
       <section
-        className="rounded-3xl border border-cream-deep bg-card p-4 shadow-sm"
-        aria-label="빠른 행동"
+        className="shrink-0 rounded-3xl border border-cream-deep bg-card p-3 shadow-sm"
+        aria-label="돌봄 행동"
       >
         <QuickActionMenu
           pet={selectedPet}
           onPet={() => strokePet(selectedPet.id)}
           onFeed={() => setSheet("food")}
           onSnack={() => setSheet("snack")}
-          onSleepToggle={handleSleepToggle}
           onWalk={() => setActivityOpen(true)}
+          onWash={handleWash}
+          onPhoto={handlePhoto}
+          onSleepToggle={handleSleepToggle}
         />
       </section>
+
+      {/* 선택 동물 상태 */}
+      <div className="shrink-0">
+        <PetStatusPanel pet={selectedPet} />
+      </div>
 
       {/* 밥 시트 */}
       <BottomSheet

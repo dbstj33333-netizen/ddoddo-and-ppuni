@@ -24,7 +24,7 @@ export default function RecordScreen() {
   ];
 
   return (
-    <div className="space-y-5">
+    <div className="h-full space-y-5 overflow-y-auto scroll-slim px-4 pt-4 pb-4">
       <header>
         <h1 className="font-display text-xl text-cocoa">기록</h1>
         <p className="text-xs text-cocoa-soft">

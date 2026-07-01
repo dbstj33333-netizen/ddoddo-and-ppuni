@@ -1,6 +1,7 @@
 "use client";
 
-// 또또와 쁘니가 함께 있는 아늑한 방. 탭하면 선택, 문지르면 쓰다듬기.
+// 아늑한 방. 한 화면에 선택된 한 마리만 보여준다.
+// 동물 전환은 상단 토글(PetSelector)로만 한다.
 import type { PetImageState } from "@/lib/constants";
 import type { Pet, PetId } from "@/lib/types";
 import PettingInteraction from "./PettingInteraction";
@@ -15,27 +16,30 @@ const BG: Record<"morning" | "day" | "night", string> = {
 export default function PetRoom({
   pets,
   selectedId,
-  speeches,
-  imageStates,
+  speech,
+  imageState,
   timeOfDay,
   onSelect,
   onStroke,
 }: {
   pets: Pet[];
   selectedId: PetId;
-  speeches: Record<PetId, string>;
-  imageStates: Partial<Record<PetId, PetImageState>>;
+  speech: string;
+  imageState?: PetImageState;
   timeOfDay: "morning" | "day" | "night";
   onSelect: (id: PetId) => void;
   onStroke: (id: PetId) => void;
 }) {
+  const pet = pets.find((p) => p.id === selectedId) ?? pets[0];
+  const accent = pet.id === "toto" ? "toto" : "ppuni";
+
   return (
     <div
-      className={`relative overflow-hidden rounded-3xl border border-cream-deep bg-gradient-to-b ${BG[timeOfDay]} p-4 shadow-[0_10px_30px_-16px_rgba(92,68,51,0.5)]`}
+      className={`relative flex h-full min-h-0 flex-col overflow-hidden rounded-[2rem] border border-cream-deep bg-gradient-to-b ${BG[timeOfDay]} px-4 pb-3 pt-3 shadow-[0_12px_34px_-16px_rgba(92,68,51,0.5)]`}
     >
-      {/* 방 소품 (창문/러그 느낌의 단순 장식) */}
+      {/* 방 소품 */}
       <div
-        className="pointer-events-none absolute right-4 top-4 grid h-14 w-14 place-items-center rounded-2xl border-2 border-white/70 bg-white/40 text-2xl"
+        className="pointer-events-none absolute right-4 top-4 grid h-11 w-11 place-items-center rounded-2xl border-2 border-white/70 bg-white/40 text-xl"
         aria-hidden
       >
         {timeOfDay === "night" ? "🌙" : "☀️"}
@@ -46,31 +50,26 @@ export default function PetRoom({
       >
         🪴
       </div>
-
-      {/* 바닥(러그) */}
       <div
-        className="pointer-events-none absolute inset-x-6 bottom-6 h-20 rounded-[50%] bg-apricot/20 blur-sm"
+        className="pointer-events-none absolute inset-x-8 bottom-6 h-16 rounded-[50%] bg-apricot/20 blur-sm"
         aria-hidden
       />
 
-      <div className="relative flex items-end justify-center gap-2 pt-10 pb-2">
-        {pets.map((pet) => (
-          <div key={pet.id} className="flex flex-col items-center">
-            <div className="mb-1 h-12 flex items-end">
-              <PetSpeechBubble
-                text={speeches[pet.id]}
-                accent={pet.id === "toto" ? "toto" : "ppuni"}
-              />
-            </div>
-            <PettingInteraction
-              pet={pet}
-              selected={pet.id === selectedId}
-              imageState={imageStates[pet.id]}
-              onSelect={onSelect}
-              onStroke={onStroke}
-            />
-          </div>
-        ))}
+      {/* 말풍선 */}
+      <div className="relative flex shrink-0 justify-center pt-1">
+        <PetSpeechBubble text={speech} accent={accent} />
+      </div>
+
+      {/* 중앙: 단일 캐릭터 (양옆 버튼 없음) */}
+      <div className="relative flex flex-1 items-center justify-center">
+        <PettingInteraction
+          pet={pet}
+          selected
+          size="xl"
+          imageState={imageState}
+          onSelect={onSelect}
+          onStroke={onStroke}
+        />
       </div>
     </div>
   );

@@ -1,13 +1,13 @@
 "use client";
 
-// 앱 셸: 탭 전환 + 하단 내비 + 토스트 + 온보딩. 로드 전엔 스플래시.
+// 앱 셸: 데스크톱에서는 폰 프레임 느낌, 모바일에서는 전체화면.
+// 내부 스크롤 + 하단 고정 내비 구조로 네이티브 앱처럼 동작한다.
 import { useState } from "react";
 import { useGame } from "@/context/GameContext";
 import BottomNavigation, { type TabKey } from "./BottomNavigation";
 import Onboarding from "./Onboarding";
 import Toast from "./Toast";
 import HomeScreen from "./screens/HomeScreen";
-import ActivityScreen from "./screens/ActivityScreen";
 import RecordScreen from "./screens/RecordScreen";
 import SettingsScreen from "./screens/SettingsScreen";
 
@@ -15,39 +15,43 @@ export default function AppShell() {
   const { ready, state, finishOnboarding } = useGame();
   const [tab, setTab] = useState<TabKey>("home");
 
-  if (!ready) {
-    return (
-      <div className="grid min-h-dvh place-items-center bg-cream">
-        <div className="flex flex-col items-center gap-3">
-          <div className="flex gap-2 text-5xl">
-            <span className="animate-bob">🐶</span>
-            <span className="animate-bob" style={{ animationDelay: "0.35s" }}>
-              🐱
-            </span>
-          </div>
-          <p className="font-display text-lg text-cocoa">또또랑 쁘니</p>
-        </div>
-      </div>
-    );
-  }
-
   return (
-    <div className="min-h-dvh bg-cream">
-      <Toast />
+    <div className="min-h-dvh w-full bg-gradient-to-b from-[#ece2cf] to-[#e2d6bd] md:flex md:items-center md:justify-center md:py-6">
+      {/* 폰 프레임 */}
+      <div className="relative mx-auto flex h-dvh w-full max-w-[430px] flex-col overflow-hidden bg-cream shadow-xl md:h-[880px] md:max-h-[92vh] md:rounded-[2.5rem] md:border-[6px] md:border-[#2c2a40]">
+        {!ready ? (
+          <div className="grid flex-1 place-items-center">
+            <div className="flex flex-col items-center gap-3">
+              <div className="flex gap-2 text-5xl">
+                <span className="animate-bob">🐶</span>
+                <span
+                  className="animate-bob"
+                  style={{ animationDelay: "0.35s" }}
+                >
+                  🐱
+                </span>
+              </div>
+              <p className="font-display text-lg text-cocoa">또또랑 쁘니</p>
+            </div>
+          </div>
+        ) : (
+          <>
+            <Toast />
 
-      <main className="mx-auto w-full max-w-md px-4 pt-4 pb-28">
-        {/* key 로 탭 전환 시 페이드 */}
-        <div key={tab} className="animate-fade-in">
-          {tab === "home" && <HomeScreen />}
-          {tab === "activity" && <ActivityScreen />}
-          {tab === "record" && <RecordScreen />}
-          {tab === "settings" && <SettingsScreen />}
-        </div>
-      </main>
+            <main className="min-h-0 flex-1">
+              <div key={tab} className="h-full animate-fade-in">
+                {tab === "home" && <HomeScreen />}
+                {tab === "record" && <RecordScreen />}
+                {tab === "settings" && <SettingsScreen />}
+              </div>
+            </main>
 
-      <BottomNavigation active={tab} onChange={setTab} />
+            <BottomNavigation active={tab} onChange={setTab} />
 
-      {!state.onboarded && <Onboarding onStart={finishOnboarding} />}
+            {!state.onboarded && <Onboarding onStart={finishOnboarding} />}
+          </>
+        )}
+      </div>
     </div>
   );
 }

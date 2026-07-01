@@ -8,10 +8,11 @@ import { petImagePath } from "@/lib/constants";
 import { computeMood, fallbackEmoji, moodToImageState } from "@/lib/mood";
 import type { Pet } from "@/lib/types";
 
-const SIZE_PX: Record<"sm" | "md" | "lg", number> = {
+const SIZE_PX: Record<"sm" | "md" | "lg" | "xl", number> = {
   sm: 84,
   md: 132,
   lg: 168,
+  xl: 200,
 };
 
 export default function PetCharacter({
@@ -21,7 +22,7 @@ export default function PetCharacter({
 }: {
   pet: Pet;
   state?: PetImageState;
-  size?: "sm" | "md" | "lg";
+  size?: "sm" | "md" | "lg" | "xl";
 }) {
   const mood = computeMood(pet);
   const effectiveState: PetImageState = state ?? moodToImageState(mood);

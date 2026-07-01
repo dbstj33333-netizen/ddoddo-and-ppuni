@@ -17,12 +17,14 @@ export default function PettingInteraction({
   pet,
   selected,
   imageState,
+  size = "lg",
   onSelect,
   onStroke,
 }: {
   pet: Pet;
   selected: boolean;
   imageState?: PetImageState;
+  size?: "md" | "lg" | "xl";
   onSelect: (id: PetId) => void;
   onStroke: (id: PetId) => void;
 }) {
@@ -117,7 +119,7 @@ export default function PettingInteraction({
       className={`no-tap-highlight relative rounded-3xl p-2 transition ${ring}`}
       style={{ touchAction: "none" }}
     >
-      <PetCharacter pet={pet} state={imageState} size="lg" />
+      <PetCharacter pet={pet} state={imageState} size={size} />
 
       {/* 이름표 */}
       <div className="mt-1 flex justify-center">
